@@ -1,0 +1,32 @@
+version: 2.1
+orbs:
+  aws-cli: cimg/node:18.20
+
+executors:
+  node-executor:
+    docker:
+      - image: circleci/python:3.8
+
+jobs:
+  snyk_scan: 
+    executor: node-executor
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: deault
+      - run:
+          name: Fetch snyk API token from Secret Manager
+          command: |
+            export SNYK_TOKEN=$(aws secretmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text)
+            echo "export SNYK_TOKEN=$SNYK_TOKEN" >> #BASH_ENV
+      - run:
+          name: Install snyk CLI
+          command: npm install -g snyk
+      - run:
+          name: Run snyk test
+          command: snyk test
+workflows:
+  version: 2.1
+  snyk_security_scan:
+    jobs:
+      - snyk_scan
