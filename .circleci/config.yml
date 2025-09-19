@@ -9,7 +9,7 @@ executors:
       - image: cimg/node:18.20
 
 jobs:
-  snyk_scan: 
+  snyk_scan:
     executor: node-executor
     steps:
       - checkout
@@ -18,7 +18,7 @@ jobs:
           name: Install Python and pip
           command: |
             sudo apt-get update
-            sudo apt-get install -y python3 python3-pip
+            sudo apt-get install -y python3 python3-pip jq
       - run:
           name: Install Python dependencies
           command: |
@@ -28,8 +28,14 @@ jobs:
       - run:
           name: Fetch snyk API token from Secrets Manager
           command: |
-            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id circleci/snyk/api-token --query SecretString --output text)
+            # For JSON secret (uncomment next line if you use JSON secret)
+            # export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text | jq -r .SNYK_TOKEN)
+            # For plain secret (uncomment next line if you use plain token)
+            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
+      - run:
+          name: Debug SNYK_TOKEN (Remove in production)
+          command: echo "SNYK_TOKEN is $SNYK_TOKEN"
       - run:
           name: Install snyk CLI
           command: npm install -g snyk
