@@ -31,7 +31,7 @@ jobs:
             # For JSON secret (uncomment next line if you use JSON secret)
             # export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text | jq -r .SNYK_TOKEN)
             # For plain secret (uncomment next line if you use plain token)
-            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text)
+            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id circleci/snyk/api-token --query SecretString --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
       - run:
           name: Debug SNYK_TOKEN (Remove in production)
