@@ -57,4 +57,5 @@ jobs:
 workflows:
   snyk_security_scan:
     jobs:
-      - snyk_scan
+      - snyk_scan:
+          oidc: true
