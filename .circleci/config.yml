@@ -8,16 +8,31 @@ executors:
     docker:
       - image: cimg/node:18.20
     environment:
-      AWS_REGION: us-east-1 
+      AWS_REGION: us-east-1
 
 jobs:
   snyk_scan:
     executor: node-executor
     steps:
       - checkout
-      - aws-cli/setup
       - run:
-          name: Install Python and pip
+          name: Assume AWS OIDC Role
+          command: |
+            ROLE_ARN="arn:aws:iam::961341535277:role/circleci"
+            OIDC_TOKEN=$(cat /tmp/circleci_oidc_token)
+            CREDS_JSON=$(aws sts assume-role-with-web-identity \
+              --role-arn "$ROLE_ARN" \
+              --role-session-name "circleci" \
+              --web-identity-token "$OIDC_TOKEN" \
+              --region $AWS_REGION)
+            export AWS_ACCESS_KEY_ID=$(echo "$CREDS_JSON" | jq -r '.Credentials.AccessKeyId')
+            export AWS_SECRET_ACCESS_KEY=$(echo "$CREDS_JSON" | jq -r '.Credentials.SecretAccessKey')
+            export AWS_SESSION_TOKEN=$(echo "$CREDS_JSON" | jq -r '.Credentials.SessionToken')
+            echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $BASH_ENV
+            echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $BASH_ENV
+            echo "export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $BASH_ENV
+      - run:
+          name: Install Python, pip, and jq
           command: |
             sudo apt-get update
             sudo apt-get install -y python3 python3-pip jq
@@ -30,14 +45,8 @@ jobs:
       - run:
           name: Fetch snyk API token from Secrets Manager
           command: |
-            # For JSON secret (uncomment next line if you use JSON secret)
-            # export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id ci/snyk/api-token --query SecretString --output text | jq -r .SNYK_TOKEN)
-            # For plain secret (uncomment next line if you use plain token)
-            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --secret-id circleci/snyk/api-token --query SecretString --output text)
+            export SNYK_TOKEN=$(aws secretsmanager get-secret-value --region $AWS_REGION --secret-id ci/snyk/api-token --query SecretString --output text | jq -r .SNYK_TOKEN)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
-      - run:
-          name: Debug SNYK_TOKEN (Remove in production)
-          command: echo "SNYK_TOKEN is $SNYK_TOKEN"
       - run:
           name: Install snyk CLI
           command: npm install -g snyk
