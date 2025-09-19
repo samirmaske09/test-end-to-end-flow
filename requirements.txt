@@ -1,0 +1,12 @@
+boto3
+strands-agents
+strands-agents-tools
+bedrock-agentcore
+bedrock-agentcore-starter-toolkit
+google-cloud-aiplatform
+google-cloud-discoveryengine
+google-auth
+google-genai
+google-generativeai
+vertexai
+requests
