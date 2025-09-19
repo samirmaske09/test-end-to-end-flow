@@ -13,8 +13,6 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-      - aws-cli/setup:
-          profile-name: default
       - run:
           name: Fetch snyk API token from Secrets Manager
           command: |
