@@ -13,6 +13,18 @@ jobs:
     executor: node-executor
     steps:
       - checkout
+      - aws-cli/setup
+      - run:
+          name: Install Python and pip
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y python3 python3-pip
+      - run:
+          name: Install Python dependencies
+          command: |
+            if [ -f requirements.txt ]; then
+              pip3 install -r requirements.txt
+            fi
       - run:
           name: Fetch snyk API token from Secrets Manager
           command: |
