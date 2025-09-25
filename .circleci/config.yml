@@ -11,16 +11,16 @@ executors:
       AWS_REGION: us-east-1
 
 jobs:
-  jobs:
   snyk_scan:
     executor: node-executor
     steps:
       - checkout
+
       - run:
-          name: Install Python, pip, jq, and awscli
+          name: Install Python, pip, jq, and unzip
           command: |
             sudo apt-get update
-            sudo apt-get install -y python3 python3-pip jq awscli
+            sudo apt-get install -y python3 python3-pip jq unzip
 
       - run:
           name: Install AWS CLI v2
@@ -28,6 +28,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install --update
+            rm -rf awscliv2.zip aws
             aws --version
 
       - run:
@@ -49,27 +50,24 @@ jobs:
             echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $BASH_ENV
             echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $BASH_ENV
             echo "export AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $BASH_ENV
+
       - run:
           name: Install Python dependencies
           command: |
             if [ -f requirements.txt ]; then
               pip3 install -r requirements.txt
             fi
+
       - run:
           name: Fetch snyk API token from Secrets Manager
           command: |
             SNYK_TOKEN=$(aws secretsmanager get-secret-value \
               --region $AWS_REGION \
-              --secret-id circleci/snyk/api-token \
+              --secret-id ci/snyk/api-token \
               --query SecretString \
               --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
-      - run:
-          name: Install snyk CLI
-          command: npm install -g snyk
-
       - snyk/scan
-
 
 workflows:
   snyk_security_scan:
