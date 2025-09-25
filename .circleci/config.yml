@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@4.2.1
+  snyk: snyk/snyk@1.0.9
 
 executors:
   node-executor:
@@ -58,6 +58,7 @@ jobs:
       - run:
           name: Run snyk test
           command: snyk test
+      - snyk/scan
 
 workflows:
   snyk_security_scan:
