@@ -67,6 +67,7 @@ jobs:
               --query SecretString \
               --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
+            cat $SNYK_TOKEN
       - snyk/scan
 
 workflows:
