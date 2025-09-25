@@ -13,6 +13,7 @@ executors:
 jobs:
   snyk_scan:
     executor: node-executor
+    oidc: true
     steps:
       - checkout
       - run:
