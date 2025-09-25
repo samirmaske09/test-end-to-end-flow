@@ -60,7 +60,7 @@ jobs:
           command: |
             SNYK_TOKEN=$(aws secretsmanager get-secret-value \
               --region $AWS_REGION \
-              --secret-id ci/snyk/api-token \
+              --secret-id circleci/snyk/api-token \
               --query SecretString \
               --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
