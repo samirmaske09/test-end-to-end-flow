@@ -28,7 +28,7 @@ jobs:
               echo "OIDC token file not found! Make sure 'oidc: true' is set under this job in your workflow." && exit 1
             fi
             OIDC_TOKEN=$(cat /tmp/circleci_oidc_token)
-            CREDS_JSON=$(aws sts assume-role-with-web-identity \
+            CREDS_JSON=$(aws sts assume-role-with-web-identity  \
               --role-arn "$ROLE_ARN" \
               --role-session-name "circleci" \
               --web-identity-token "$OIDC_TOKEN" \
