@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.2.1
+  oidc: true
 
 executors:
   node-executor:
@@ -13,7 +14,6 @@ executors:
 jobs:
   snyk_scan:
     executor: node-executor
-    oidc: true
     steps:
       - checkout
       - run:
