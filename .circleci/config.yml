@@ -2,8 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@4.2.1
-  oidc: true
-
+  
 executors:
   node-executor:
     docker:
@@ -26,10 +25,10 @@ jobs:
           command: |
             ROLE_ARN="arn:aws:iam::961341535277:role/circleci"
             if [ ! -f /tmp/circleci_oidc_token ]; then
-              echo "OIDC token file not found! Make sure 'oidc: true' is set under this job in your workflow." && exit 1
+              echo "OIDC token file not found! Did you enable OIDC in CircleCI project settings?" && exit 1
             fi
             OIDC_TOKEN=$(cat /tmp/circleci_oidc_token)
-            CREDS_JSON=$(aws sts assume-role-with-web-identity  \
+            CREDS_JSON=$(aws sts assume-role-with-web-identity \
               --role-arn "$ROLE_ARN" \
               --role-session-name "circleci" \
               --web-identity-token "$OIDC_TOKEN" \
