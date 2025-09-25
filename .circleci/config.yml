@@ -25,8 +25,9 @@ jobs:
           command: |
             ROLE_ARN="arn:aws:iam::961341535277:role/circleci"
             if [ -z "$CIRCLE_OIDC_TOKEN" ]; then
-            echo "OIDC token not available! Did you enable OIDC in CircleCI contexts?" && exit 1
+              echo "OIDC token not found! Did you attach the correct Context with OIDC enabled?" && exit 1
             fi
+            OIDC_TOKEN="$CIRCLE_OIDC_TOKEN"
             OIDC_TOKEN="$CIRCLE_OIDC_TOKEN"
             OIDC_TOKEN=$(cat /tmp/circleci_oidc_token)
             CREDS_JSON=$(aws sts assume-role-with-web-identity \
