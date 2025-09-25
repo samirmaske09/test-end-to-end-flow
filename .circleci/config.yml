@@ -29,11 +29,11 @@ jobs:
             unzip awscliv2.zip
             sudo ./aws/install --update
             aws --version
-            
+
       - run:
           name: Assume AWS OIDC Role
           command: |
-            ROLE_ARN="arn:aws:iam::961341535277:role/circleci"
+            ROLE_ARN="arn:aws:iam::961341535277:role/newcircleci"
             if [ -z "$CIRCLE_OIDC_TOKEN" ]; then
               echo "OIDC token not found! Did you attach the correct Context with OIDC enabled?" && exit 1
             fi
