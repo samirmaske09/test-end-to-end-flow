@@ -66,8 +66,8 @@ jobs:
               --secret-id circleci/snyk/api-token \
               --query SecretString \
               --output text)
+            SNYK_TOKEN=$(echo "$SECRET_JSON" | jq -r .SNYK_TOKEN)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
-            cat $SNYK_TOKEN
       - snyk/scan
 
 workflows:
