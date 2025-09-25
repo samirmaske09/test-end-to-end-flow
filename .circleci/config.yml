@@ -67,7 +67,30 @@ jobs:
               --query SecretString \
               --output text)
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
-      - snyk/scan
+
+      - run:
+          name: Validate Snyk Token
+          command: |
+            # Load SNYK_TOKEN into current shell
+            source $BASH_ENV
+
+            if [ -z "$SNYK_TOKEN" ]; then
+              echo "SNYK_TOKEN is empty!"
+              exit 1
+            fi
+
+            # Test token via Snyk API
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token $SNYK_TOKEN" \
+              https://snyk.io/api/v1/user/me)
+
+            if [ "$HTTP_STATUS" -ne 200 ]; then
+              echo "SNYK_TOKEN is invalid! HTTP status: $HTTP_STATUS"
+              exit 1
+            else
+            echo "SNYK_TOKEN is valid."
+            fi      
+      - snyk/scan 
 
 workflows:
   snyk_security_scan:
