@@ -69,6 +69,16 @@ jobs:
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
 
       - run:
+          name: Debug Secret Fetch
+          command: |
+            echo "Raw Secret Value:"
+            aws secretsmanager get-secret-value \
+              --region $AWS_REGION \
+              --secret-id ci/snyk/api-token \
+              --query SecretString \
+              --output text
+
+      - run:
           name: Validate Snyk Token
           command: |
             # Load SNYK_TOKEN into current shell
