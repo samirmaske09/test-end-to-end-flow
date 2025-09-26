@@ -69,7 +69,24 @@ jobs:
             SNYK_TOKEN=$(echo $SECRET_JSON | jq -r '."newcircleci/snyk/api-token"')
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
 
-      - snyk/scan
+security-scan:
+    docker:
+      - image: cimg/python:3.11
+    steps:
+      - checkout
+      - snyk/scan:
+          monitor: true
+          severity-threshold: low
+          fail-on-issues: true
+          # Dependency scan
+          args: --file=requirements.txt
+      - snyk/scan:
+          monitor: true
+          severity-threshold: low
+          fail-on-issues: true
+          # Code scan (Snyk Code scans .py files)
+          command: code test
+          
 workflows:
   snyk_security_scan:
     jobs:
