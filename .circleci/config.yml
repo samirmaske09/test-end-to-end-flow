@@ -63,7 +63,7 @@ jobs:
           command: |
             SECRET_JSON=$(aws secretsmanager get-secret-value \
               --region $AWS_REGION \
-              --secret-id circleci/snyk/api-token \
+              --secret-id newcircleci/snyk/api-token \
               --query SecretString \
               --output text)
             SNYK_TOKEN=$(echo $SECRET_JSON | jq -r '."newcircleci/snyk/api-token"')
