@@ -69,11 +69,7 @@ jobs:
             SNYK_TOKEN=$(echo $SECRET_JSON | jq -r '."newcircleci/snyk/api-token"')
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
 
-      - snyk/scan:
-          args: "--file=requirements.txt"
-      - snyk/scan:
-          command: code test
-
+      - snyk/scan
 workflows:
   snyk_security_scan:
     jobs:
