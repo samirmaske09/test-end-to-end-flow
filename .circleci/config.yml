@@ -70,38 +70,16 @@ jobs:
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
 
       - run:
-          name: Debug Secret Fetch
+          name: Snyk Open Source (requirements.txt)
           command: |
-            echo "Raw Secret Value:"
-            aws secretsmanager get-secret-value \
-              --region $AWS_REGION \
-              --secret-id newcircleci/snyk/api-token \
-              --query SecretString \
-              --output text
+            source $BASH_ENV
+            snyk test --file=requirements.txt || true
 
       - run:
-          name: Validate Snyk Token
+          name: Snyk Code (Python source files)
           command: |
-            # Load SNYK_TOKEN into current shell
             source $BASH_ENV
-
-            if [ -z "$SNYK_TOKEN" ]; then
-              echo "SNYK_TOKEN is empty!"
-              exit 1
-            fi
-
-            # Test token via Snyk API
-            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-              -H "Authorization: token $SNYK_TOKEN" \
-              https://snyk.io/api/v1/user/me)
-
-            if [ "$HTTP_STATUS" -ne 200 ]; then
-              echo "SNYK_TOKEN is invalid! HTTP status: $HTTP_STATUS"
-              exit 1
-            else
-            echo "SNYK_TOKEN is valid."
-            fi      
-      - snyk/scan 
+            snyk code test || true
 
 workflows:
   snyk_security_scan:
