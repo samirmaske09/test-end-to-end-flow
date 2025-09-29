@@ -70,6 +70,16 @@ jobs:
             echo "export SNYK_TOKEN=$SNYK_TOKEN" >> $BASH_ENV
 
       - run:
+          name: Install Snyk CLI (official static binary)
+          command: |
+            curl -fL -o snyk "https://static.snyk.io/cli/latest/snyk-linux"
+            sudo mv snyk /usr/local/bin/snyk
+            sudo chmod +x /usr/local/bin/snyk
+            which snyk
+            snyk --version
+
+
+      - run:
           name: Dependency scan (requirements.txt) and upload to Snyk (monitor)
           command: |
             source $BASH_ENV
