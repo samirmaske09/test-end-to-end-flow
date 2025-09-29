@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  snyk: snyk/snyk@1.7.0
+  snyk: snyk/snyk@2.3.3
 
 executors:
   node-executor:
@@ -74,18 +74,19 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
+      # Dependency scan (requirements.txt)
       - snyk/scan:
           monitor: true
           severity-threshold: low
           fail-on-issues: true
-          # Dependency scan
-          args: --file=requirements.txt
+          target-file: requirements.txt
+      # Code scan (Snyk Code scans .py files)
       - snyk/scan:
           monitor: true
           severity-threshold: low
           fail-on-issues: true
-          # Code scan (Snyk Code scans .py files)
-          command: code test
+          project-type: code
+
 workflows:
   snyk_security_scan:
     jobs:
