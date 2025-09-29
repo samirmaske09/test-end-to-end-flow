@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  snyk: snyk/snyk@2.3.0
+  snyk: snyk/snyk@2
 
 executors:
   node-executor:
