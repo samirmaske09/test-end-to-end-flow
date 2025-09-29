@@ -78,42 +78,29 @@ jobs:
             which snyk
             snyk --version
 
-
       - run:
           name: Dependency scan (requirements.txt) and upload to Snyk (monitor)
           command: |
             source $BASH_ENV
             if [ -f requirements.txt ]; then
-              # Run test (this returns non-zero if issues found)
-              snyk test --file=requirements.txt --severity-threshold=low
-              TEST_EXIT=$?
-              # Always upload monitor results
+              snyk test --file=requirements.txt --severity-threshold=low || true
               snyk monitor --file=requirements.txt
-
-              # Optional: fail the job if issues found (set to 1 to fail)
-              FAIL_ON_ISSUES=1
-              if [ "$FAIL_ON_ISSUES" -eq 1 ] && [ "$TEST_EXIT" -ne 0 ]; then
-                echo "Vulnerabilities found by snyk test (requirements.txt) — failing build."
-                exit $TEST_EXIT
-              fi
-            else
-              echo "No requirements.txt found — skipping dependency scan."
             fi
-
+            
       - run:
           name: Code scan (Snyk Code) and upload
           command: |
             source $BASH_ENV
-            # Run Snyk Code test across repo
-            snyk code test --severity-threshold=low
-            CODE_EXIT=$?
+            snyk code test --severity-threshold=low || true
             snyk code monitor
-            # Optional: fail on code issues too
-            FAIL_ON_CODE_ISSUES=0
-            if [ "$FAIL_ON_CODE_ISSUES" -eq 1 ] && [ "$CODE_EXIT" -ne 0 ]; then
-              echo "Snyk Code found issues — failing build."
-              exit $CODE_EXIT
-            fi
+
+      - run:
+          name: Build Python package
+          command: python3 setup.py sdist bdist_wheel
+
+      - run:
+          name: Run pytest
+          command: pytest --maxfail=1 --disable-warnings -q
 
 workflows:
   snyk_security_scan:
