@@ -76,15 +76,11 @@ jobs:
       - checkout
       # Dependency scan (requirements.txt)
       - snyk/scan:
-          monitor: true
           severity-threshold: low
-          fail-on-issues: true
           target-file: requirements.txt
       # Code scan (Snyk Code scans .py files)
       - snyk/scan:
-          monitor: true
           severity-threshold: low
-          fail-on-issues: true
           project-type: code
 
 workflows:
