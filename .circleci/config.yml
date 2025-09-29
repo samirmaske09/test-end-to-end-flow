@@ -97,6 +97,13 @@ jobs:
 #      - run:
 #          name: Build Python package
 #          command: python3 strands_agentcore_external_api.py strands_agentcore_runtime_deployment.py sdist bdist_wheel
+      - run:
+          name: Install dependencies
+          command: |
+            if [ -f requirements.txt ]; then
+              pip install -r requirements.txt
+            fi
+            pip install pytest
 
       - run:
           name: Run pytest
