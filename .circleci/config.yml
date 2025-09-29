@@ -86,7 +86,7 @@ jobs:
               snyk test --file=requirements.txt --severity-threshold=low || true
               snyk monitor --file=requirements.txt
             fi
-            
+
       - run:
           name: Code scan (Snyk Code) and upload
           command: |
@@ -96,7 +96,7 @@ jobs:
 
       - run:
           name: Build Python package
-          command: python3 setup.py sdist bdist_wheel
+          command: python3 strands_agentcore_external_api strands_agentcore_runtime_deployment sdist bdist_wheel
 
       - run:
           name: Run pytest
