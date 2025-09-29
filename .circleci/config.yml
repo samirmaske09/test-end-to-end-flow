@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  snyk: snyk/snyk@2.3.0
+  snyk: snyk/snyk@2.0.0
 
 executors:
   node-executor:
@@ -74,14 +74,25 @@ jobs:
       - image: cimg/python:3.11
     steps:
       - checkout
-      # Dependency scan (requirements.txt)
+
+      # Orb step ensures snyk is installed + uses SNYK_TOKEN
       - snyk/scan:
-          severity-threshold: low
+          token-variable: SNYK_TOKEN
           target-file: requirements.txt
-      # Code scan (Snyk Code scans .py files)
-      - snyk/scan:
-          severity-threshold: low
-          project-type: code
+
+      # Custom dependency scan (with monitor & severity threshold)
+      - run:
+          name: Dependency Scan
+          command: |
+            snyk test --file=requirements.txt --severity-threshold=low
+            snyk monitor --file=requirements.txt
+
+      # Custom code scan of .py files
+      - run:
+          name: Code Scan
+          command: |
+            snyk code test --severity-threshold=low
+            snyk code monitor
 
 workflows:
   snyk_security_scan:
