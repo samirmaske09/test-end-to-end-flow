@@ -94,20 +94,31 @@ jobs:
             snyk code test --severity-threshold=low || true
             snyk code monitor
 
-#      - run:
-#          name: Build Python package
-#          command: python3 strands_agentcore_external_api.py strands_agentcore_runtime_deployment.py sdist bdist_wheel
       - run:
-          name: Install dependencies
+          name: Install build/test tooling
           command: |
-            if [ -f requirements.txt ]; then
-              pip install -r requirements.txt
-            fi
-            pip install pytest
+            python3 -m pip install --upgrade pip build setuptools wheel pytest
+
+      - run:
+          name: Build Python package
+          command: |
+            python3 -m build
+
+      - run:
+          name: Install built package
+          command: |
+            pip install dist/*.whl
+
+      - run:
+          name: Install runtime deps (if any)
+          command: |
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - run:
           name: Run pytest
-          command: pytest --maxfail=1 --disable-warnings -q
+          command: |
+            python -m pytest --maxfail=1 --disable-warnings -q
+
 
 workflows:
   snyk_security_scan:
