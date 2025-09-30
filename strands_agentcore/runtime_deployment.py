@@ -26,7 +26,7 @@ agentcore_runtime = Runtime()
 agent_name = "strands_external_api_agent"
 
 response = agentcore_runtime.configure(
-    entrypoint="strands_agentcore_external_api.py",
+    entrypoint="external_api.py",
     auto_create_execution_role=True,
     auto_create_ecr=True,
     requirements_file="requirements.txt",
