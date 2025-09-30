@@ -3,7 +3,7 @@ import json
 import types
 import pytest
 
-from strands_agentcore.external_api import get_objects_api, handler
+from strands_agentcore.external_api import get_objects_api, strands_agent_bedrock
 
 class DummyResponse:
     def __init__(self, ok_json, status_code=200):
