@@ -119,6 +119,22 @@ jobs:
           command: |
             BEDROCK_AGENTCORE_NO_PROMPT=true python -m pytest --maxfail=1 --disable-warnings -q
 
+      - run:
+          name: Authenticate Docker to AWS ECR
+          command: |
+            source $BASH_ENV
+            aws ecr get-login-password --region $AWS_REGION \
+              | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
+      - run:
+          name: Build and Push Docker image
+          command: |
+            source $BASH_ENV
+            IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/strands-agent:${CIRCLE_SHA1}
+            docker build -t $IMAGE_URI .
+            docker push $IMAGE_URI
+            echo "Pushed Docker image: $IMAGE_URI"
+
 
 workflows:
   snyk_security_scan:
