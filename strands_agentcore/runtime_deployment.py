@@ -1,6 +1,10 @@
-from bedrock_agentcore_starter_toolkit.notebook.runtime import bedrock_agentcore
+#from bedrock_agentcore_starter_toolkit.notebook.runtime import bedrock_agentcore
 
-agentcore_runtime = bedrock_agentcore.BedrockAgentCore()
+#agentcore_runtime = bedrock_agentcore.BedrockAgentCore()
+from bedrock_agentcore_starter_toolkit import Runtime
+
+agentcore_runtime = Runtime()
+
 
 def configure_runtime(non_interactive: bool = True):
     """Configure Bedrock AgentCore safely."""
